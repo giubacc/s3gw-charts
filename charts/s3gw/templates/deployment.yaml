@@ -72,14 +72,18 @@ spec:
             - secretRef:
                 name: {{ include "s3gw.defaultUserCredentialsSecret" . }}
           volumeMounts:
+{{- if ne .Values.storageClass.name "ephemeral" }}
             - name: s3gw-lh-store
               mountPath: /data
+{{ end }}
             - name: s3gw-cluster-ip-tls
               mountPath: /s3gw-cluster-ip-tls
       volumes:
+{{- if ne .Values.storageClass.name "ephemeral" }}
         - name: s3gw-lh-store
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-s3gw-pvc
+{{ end }}
         - name: s3gw-cluster-ip-tls
           secret:
             secretName: {{ .Release.Name }}-{{ .Release.Namespace }}-s3gw-cluster-ip-tls
